@@ -37,7 +37,7 @@ func New{{ pascalize .Name }}Params() *{{ pascalize .Name }}Params {
   return &{{ pascalize .Name}}Params{
   {{ range .Params }}{{ if .HasDefault }}{{ pascalize .Name}}: {{ if and (not .IsArray) (not .IsMap) (not .HasDiscriminator) (or .IsNullable  ) }}&{{ end }}{{ varname .ID }}Default,
   {{ end }}{{ end }}
-    {{ camelize .TimeoutName }}: cr.DefaultTimeout,
+    {{ pascalize .TimeoutName }}: cr.DefaultTimeout,
   }
 }
 
@@ -51,7 +51,7 @@ func New{{ pascalize .Name }}ParamsWithTimeout(timeout time.Duration) *{{ pascal
   return &{{ pascalize .Name}}Params{
   {{ range .Params }}{{ if .HasDefault }}{{ pascalize .ID}}: {{ if and (not .IsArray) (not .IsMap) (not .HasDiscriminator) (or .IsNullable  ) }}&{{ end }}{{ varname .ID }}Default,
   {{ end }}{{ end }}
-    {{ camelize .TimeoutName }}: timeout,
+    {{ pascalize .TimeoutName }}: timeout,
   }
 }
 
@@ -94,7 +94,7 @@ type {{ pascalize .Name }}Params struct {
   {{ pascalize .ID }} {{ if and (not .IsArray) (not .IsMap) (not .HasDiscriminator) (not .IsInterface) (not .IsStream) (or .IsNullable  ) }}*{{ end }}{{ if not .IsFileParam }}{{ .GoType }}{{ else }}runtime.NamedReadCloser{{end}}
   {{ end }}
 
-  {{ camelize .TimeoutName }} time.Duration
+  {{ pascalize .TimeoutName }} time.Duration
   Context context.Context
   HTTPClient *http.Client
 }
@@ -107,7 +107,7 @@ func ({{ .ReceiverName }} *{{ pascalize .Name }}Params) With{{ pascalize .Timeou
 
 // Set{{ pascalize .TimeoutName }} adds the timeout to the {{ humanize .Name }} params
 func ({{ .ReceiverName }} *{{ pascalize .Name }}Params) Set{{ pascalize .TimeoutName }}(timeout time.Duration) {
-  {{ .ReceiverName }}.{{ camelize .TimeoutName }} = timeout
+  {{ .ReceiverName }}.{{ pascalize .TimeoutName }} = timeout
 }
 
 // WithContext adds the context to the {{ humanize .Name }} params
@@ -148,7 +148,7 @@ func ({{ $.ReceiverName }} *{{ pascalize $.Name }}Params) Set{{ pascalize .ID }}
 // WriteToRequest writes these params to a swagger request
 func ({{ .ReceiverName }} *{{ pascalize .Name }}Params) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
-  if err := r.SetTimeout({{ .ReceiverName }}.{{ camelize .TimeoutName }}); err != nil {
+  if err := r.SetTimeout({{ .ReceiverName }}.{{ pascalize .TimeoutName }}); err != nil {
     return err
   }
   var res []error

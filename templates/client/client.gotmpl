@@ -105,10 +105,6 @@ func (a *Client) {{ pascalize .Name }}(params *{{ pascalize .Name }}Params{{ if 
 }
 {{- end }}
 
-  /*ResponseError handles this case with default header values.
-
-  Bad Request
-  */
   type ResponseError struct {
   Payload *ResponseErrorBody
   }
@@ -143,7 +139,7 @@ func (a *Client) {{ pascalize .Name }}(params *{{ pascalize .Name }}Params{{ if 
   type ResponseErrorBody struct {
 
   // errors
-  Errors *models.ErrorResponse `json:"errors,omitempty"`
+  Errors *ErrorResponse `json:"errors,omitempty"`
   }
 
   // Validate validates this picklists patch bad request body
@@ -193,5 +189,40 @@ func (a *Client) {{ pascalize .Name }}(params *{{ pascalize .Name }}Params{{ if 
   return err
   }
   *o = res
+  return nil
+  }
+
+  type ErrorResponse struct {
+
+  // code
+  Code int64 `json:"code,omitempty"`
+
+  // errors
+  Errors map[string][]string `json:"errors,omitempty"`
+
+  // message
+  Message string `json:"message,omitempty"`
+  }
+
+  // Validate validates this error response
+  func (m *ErrorResponse) Validate(formats strfmt.Registry) error {
+  return nil
+  }
+
+  // MarshalBinary interface implementation
+  func (m *ErrorResponse) MarshalBinary() ([]byte, error) {
+  if m == nil {
+  return nil, nil
+  }
+  return swag.WriteJSON(m)
+  }
+
+  // UnmarshalBinary interface implementation
+  func (m *ErrorResponse) UnmarshalBinary(b []byte) error {
+  var res ErrorResponse
+  if err := swag.ReadJSON(b, &res); err != nil {
+  return err
+  }
+  *m = res
   return nil
   }

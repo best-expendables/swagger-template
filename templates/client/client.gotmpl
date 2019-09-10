@@ -114,7 +114,7 @@ func (a *Client) {{ pascalize .Name }}(params *{{ pascalize .Name }}Params{{ if 
   }
 
   func (o *ResponseError) Error() string {
-  return fmt.Sprintf("[POST /pickings/picklists][%d] ResponseError  %+v", 400, o.Payload)
+  return fmt.Sprintf("ResponseStatus[%d] ResponseError  %+v", o.Payload.Errors.Code, o.Payload)
   }
 
   func (o *ResponseError) GetPayload() *ResponseErrorBody {
@@ -133,45 +133,13 @@ func (a *Client) {{ pascalize .Name }}(params *{{ pascalize .Name }}Params{{ if 
   return nil
   }
 
-  /*ResponseErrorBody picklists patch bad request body
+  /*ResponseErrorBody
   swagger:model ResponseErrorBody
   */
   type ResponseErrorBody struct {
 
   // errors
   Errors *ErrorResponse `json:"errors,omitempty"`
-  }
-
-  // Validate validates this picklists patch bad request body
-  func (o *ResponseErrorBody) Validate(formats strfmt.Registry) error {
-  var res []error
-
-  if err := o.validateData(formats); err != nil {
-  res = append(res, err)
-  }
-
-  if len(res) > 0 {
-  return errors.CompositeValidationError(res...)
-  }
-  return nil
-  }
-
-  func (o *ResponseErrorBody) validateData(formats strfmt.Registry) error {
-
-  if swag.IsZero(o.Errors) { // not required
-  return nil
-  }
-
-  if o.Errors != nil {
-  if err := o.Errors.Validate(formats); err != nil {
-  if ve, ok := err.(*errors.Validation); ok {
-  return ve.ValidateName("picklistsPatchBadRequest" + "." + "data")
-  }
-  return err
-  }
-  }
-
-  return nil
   }
 
   // MarshalBinary interface implementation

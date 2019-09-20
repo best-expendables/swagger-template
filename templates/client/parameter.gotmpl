@@ -97,6 +97,7 @@ type {{ pascalize .Name }}Params struct {
   {{ pascalize .TimeoutName }} time.Duration
   Context context.Context
   HTTPClient *http.Client
+  UserID string
 }
 
 // With{{ pascalize .TimeoutName }} adds the timeout to the {{ humanize .Name }} params
@@ -147,7 +148,12 @@ func ({{ $.ReceiverName }} *{{ pascalize $.Name }}Params) Set{{ pascalize .ID }}
 {{ end }}
 // WriteToRequest writes these params to a swagger request
 func ({{ .ReceiverName }} *{{ pascalize .Name }}Params) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
-
+    // header param ID
+    if o.UserID != "" {
+        if err := r.SetHeaderParam("X-Sm-User-ID", o.UserID); err != nil {
+            return err
+        }
+    }
   if err := r.SetTimeout({{ .ReceiverName }}.{{ pascalize .TimeoutName }}); err != nil {
     return err
   }

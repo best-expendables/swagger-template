@@ -107,6 +107,8 @@ func (a *Client) {{ pascalize .Name }}(params *{{ pascalize .Name }}Params{{ if 
 
   type ResponseError struct {
   Payload *ResponseErrorBody
+  Code int64
+  Message string
   }
 
   func NewResponseError() *ResponseError {
@@ -114,7 +116,16 @@ func (a *Client) {{ pascalize .Name }}(params *{{ pascalize .Name }}Params{{ if 
   }
 
   func (o *ResponseError) Error() string {
-  return fmt.Sprintf("ResponseStatus[%d] ResponseError  %+v", o.Payload.Errors.Code, o.Payload)
+  var code int64
+  var msg interface{}
+  if o.Payload != nil && o.Payload.Errors != nil {
+  code = o.Payload.Errors.Code
+  msg = o.Payload.Errors
+  } else {
+  code = o.Code
+  msg = o.Message
+  }
+  return fmt.Sprintf("ResponseStatus[%d] ResponseError  %+v", code, msg)
   }
 
   func (o *ResponseError) GetPayload() *ResponseErrorBody {
@@ -124,6 +135,8 @@ func (a *Client) {{ pascalize .Name }}(params *{{ pascalize .Name }}Params{{ if 
   func (o *ResponseError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
   o.Payload = new(ResponseErrorBody)
+  o.Code = int64(response.Code())
+  o.Message = response.Message()
 
   // response payload
   if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
